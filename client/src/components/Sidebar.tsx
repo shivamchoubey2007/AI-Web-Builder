@@ -126,7 +126,7 @@ const Sidebar = ({
         <form onSubmit={handleRevisions} className='m-3 relative'>
           <div className='flex items-center gap-2'>
             <textarea
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)} value={input}
               rows={4}
               placeholder='Describe your website or request changes...'
               className='flex-1 p-3 rounded-xl resize-none text-sm outline-none ring ring-gray-700 focus:ring-indigo-500 bg-gray-800text-gray-100 placeholder-gray-400 transition-all'
