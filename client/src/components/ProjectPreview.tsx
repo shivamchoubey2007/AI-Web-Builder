@@ -38,6 +38,7 @@ const ProjectPreview = forwardRef<ProjectPreviewRef,ProjectPreviewProps>(({
           srcDoc={injectpreview(project.current_code)}
           className={`h-full max-sm:w-full ${resolution[device]} mx-auto transition-all`}
          />
+         {}
         </>
       ): isGenerating &&(<div>loading</div>)}
 
