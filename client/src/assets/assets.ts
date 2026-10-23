@@ -1,4 +1,5 @@
 import logo from './logo.svg';
+import type { Project } from '../types';
 
 export const assets = {
     logo,
@@ -37,7 +38,7 @@ export const dummyUser = {
     email: 'test@greatstack.dev'
 }
 
-export const dummyProjects = [
+export const dummyProjects: Project[] = [
     {
         id: '6a6a3a97-8fb0-41e9-ad08-3f9e6dc7d359',
         name: 'create a devloper portfolio website with all se...',
@@ -149,6 +150,15 @@ export const dummyConversations = [
     { id: 'e4794880-930b-4cbd-928c-fed981fdebe9', role: 'user', content: 'create a cta section before footer', timestamp: '2025-11-14 10:22:55.409', projectId: '6cd61d42-04e3-433f-9fcc-aba884e4115f' },
     { id: 'ec1d0622-a904-4227-89c8-47300c4cf28e', role: 'assistant', content: 'Now making changes to your website...', timestamp: '2025-11-14 10:59:50.031', projectId: '6cd61d42-04e3-433f-9fcc-aba884e4115f' },
 ];
+
+dummyProjects.forEach((project) => {
+    project.conversation = dummyConversations.map(({ id, role, content, timestamp }) => ({
+        id,
+        role,
+        content,
+        timestamp,
+    }));
+});
 
 export const dummyVersion = [
     {

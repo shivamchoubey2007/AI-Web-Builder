@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import type { Project } from '../types'
 import {
@@ -19,6 +19,7 @@ import ProjectPreview, { type ProjectPreviewRef } from '../components/ProjectPre
 import api from '@/configs/axios'
 import { authClient } from '@/lib/auth-client'
 import { toast } from 'sonner'
+import { dummyProjects } from '../assets/assets'
 
 const Projects = () => {
 
@@ -27,26 +28,36 @@ const Projects = () => {
 
     const { data: session, isPending } = authClient.useSession()
 
-    const [project, setProject] = useState<Project | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [isGenerating, setIsGenerating] = useState(true)
+    const localProject = dummyProjects.find((item) => item.id === projectId)
+    const [project, setProject] = useState<Project | null>(localProject ?? null)
+    const [loading, setLoading] = useState(!localProject)
+    const [isGenerating, setIsGenerating] = useState(localProject ? !localProject.current_code : true)
     const [device, setDevice] = useState<'phone' | 'tablet' | 'desktop'>('desktop')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
 
     const previewRef = useRef<ProjectPreviewRef>(null)
 
-    const fetchProject = async () => {
+    const fetchProject = useCallback(async () => {
+        const localProject = dummyProjects.find((item) => item.id === projectId)
+        if (localProject) {
+            setProject(localProject)
+            setIsGenerating(!localProject.current_code)
+            setLoading(false)
+            return
+        }
+
         try {
             const { data } = await api.get(`/api/user/project/${projectId}`)
             setProject(data.project)
             setIsGenerating(data.project.current_code ? false : true)
-            setLoading(false)
         } catch (error: any) {
             toast.error(error?.response?.data?.message || error.message)
             console.log(error)
+        } finally {
+            setLoading(false)
         }
-    }
+    }, [projectId])
 
     const saveProject = async () => {
         if (!previewRef.current) return
@@ -93,20 +104,23 @@ const Projects = () => {
     }
 
     useEffect(() => {
+        if (dummyProjects.some((item) => item.id === projectId)) {
+            return
+        }
         if (session?.user) {
             fetchProject()
         } else if (!isPending && !session?.user) {
             navigate('/')
             toast('Please login to view your projects')
         }
-    }, [session?.user])
+    }, [fetchProject, isPending, navigate, projectId, session?.user])
 
     useEffect(() => {
         if (project && !project.current_code) {
             const intervalId = setInterval(fetchProject, 10000)
             return () => clearInterval(intervalId)
         }
-    }, [project])
+    }, [fetchProject, project])
 
     if (loading) {
         return (

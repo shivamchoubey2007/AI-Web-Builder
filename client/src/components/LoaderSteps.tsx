@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScanLine, Layout, Triangle, Circle } from 'lucide-react'
 
 const LoaderSteps = () => {
