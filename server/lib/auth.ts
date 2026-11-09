@@ -4,6 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
 
 const trustedOrigins=process.env.TRUSTED_ORIGINS?.split(',')||[];
+const isProduction = process.env.NODE_ENV === 'production';
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -12,8 +13,13 @@ export const auth = betterAuth({
     emailAndPassword: { 
     enabled: true, 
   }, 
+  user: {
+    deleteUser: {
+      enabled: true,
+    }
+  },
   trustedOrigins,
-  baseURL:process.env.BETTER_AUTH_URL!,// BY Adding the sign it will not give error if missing.
+  baseURL:process.env.BETTER_AUTH_URL!,
   secret:process.env.BETTER_AUTH_SECRET!,
   advanced:{
     cookies:{
@@ -21,8 +27,8 @@ export const auth = betterAuth({
         name:'auth_session',
         attributes:{
           httpOnly:true,
-          secure:process.env.NODE_ENV==='production',
-          sameSite:'none',
+          secure: isProduction,
+          sameSite: isProduction ? 'none' : 'lax',
           path:'/',
         }
       }

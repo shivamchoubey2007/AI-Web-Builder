@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 
 const Preview = () => {
-  const {projectId,versionId} = useParams();
+  const {projectId, versionId: _versionId} = useParams();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(true);
 
