@@ -1,23 +1,38 @@
-import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import api from '@/configs/axios';
+import { useNavigate } from 'react-router-dom';
+
 const Home = () => {
 
-  const [, setInput] = useState('');
+  const {data: session} = authClient.useSession();
+  const navigate = useNavigate();
+  
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const onSubmitHandler = async (e: FormEvent) => {
+  const onSubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    setLoading(true);
-    // Simulate an API call or any async operation
-    setTimeout(() => {
+    try{
+      if(!session?.user){
+        return toast.error('Please sign in to create a project');
+      }else if(!input.trim()){
+        return toast.error('Please enter a message');
+      }
+      setLoading(true);
+      const {data} = await api.post('/api/user/project', {initialPrompt: input});
       setLoading(false);
-    }, 3000);
+      navigate(`/projects/${data.projectId}`);
+    }catch(error :any){
+      setLoading(false);
+      toast.error(error.response?.data?.message || error.message);
+      console.error(error);
+    }
   }
   return ( 
       
-
       <section className="flex flex-col items-center text-white text-sm pb-20 px-4 font-poppins">
          
         <a href="https://prebuiltui.com" className="flex items-center gap-2 border border-slate-700 rounded-full p-1 pr-3 text-sm mt-20">

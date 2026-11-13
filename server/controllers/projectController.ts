@@ -49,7 +49,7 @@ export const makeRevision = async (req: Request, res: Response) => {
 
         // Enhance user prompt
         const promptEnhanceResponse = await openai.chat.completions.create({
-            model: 'recursive/flint-v1.0:free',
+            model: '~openai/gpt-sol-latest',
             messages: [
                 {
                     role: 'system',
@@ -96,7 +96,7 @@ Instructions:
 
         // Generate website code
         const codeGenerationResponse = await openai.chat.completions.create({
-            model: 'recursive/flint-v1.0:free',
+            model: '~openai/gpt-sol-latest',
             messages: [
                {
     role: 'system',

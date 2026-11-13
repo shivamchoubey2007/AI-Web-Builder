@@ -25,7 +25,6 @@ const Projects = () => {
 
     const { projectId } = useParams()
     const navigate = useNavigate()
-
     const { data: session, isPending } = authClient.useSession()
 
     const localProject = dummyProjects.find((item) => item.id === projectId)
@@ -38,26 +37,19 @@ const Projects = () => {
 
     const previewRef = useRef<ProjectPreviewRef>(null)
 
-    const fetchProject = useCallback(async () => {
-        const localProject = dummyProjects.find((item) => item.id === projectId)
-        if (localProject) {
-            setProject(localProject)
-            setIsGenerating(!localProject.current_code)
-            setLoading(false)
-            return
-        }
-
+    const fetchProject = async () => {
         try {
             const { data } = await api.get(`/api/user/project/${projectId}`)
             setProject(data.project)
-            setIsGenerating(data.project.current_code ? false : true)
-        } catch (error: any) {
+            setIsGenerating(data.project.current_code? false : true)
+            setLoading(false)
+        }catch (error: any) {
             toast.error(error?.response?.data?.message || error.message)
             console.log(error)
-        } finally {
-            setLoading(false)
         }
-    }, [projectId])
+
+    }
+        
 
     const saveProject = async () => {
         if (!previewRef.current) return
@@ -103,24 +95,40 @@ const Projects = () => {
         }
     }
 
-    useEffect(() => {
-        if (dummyProjects.some((item) => item.id === projectId)) {
-            return
-        }
-        if (session?.user) {
-            fetchProject()
-        } else if (!isPending && !session?.user) {
-            navigate('/')
-            toast('Please login to view your projects')
-        }
-    }, [fetchProject, isPending, navigate, projectId, session?.user])
+    // useEffect(() => {
+    //     if (dummyProjects.some((item) => item.id === projectId)) {
+    //         return
+    //     }
+    //     if (session?.user) {
+    //         fetchProject()
+    //     } else if (!isPending && !session?.user) {
+    //         navigate('/')
+    //         toast('Please login to view your projects')
+    //     }
+    // }, [fetchProject, isPending, navigate, projectId, session?.user])
+
+    // useEffect(() => {
+    //     if (project && !project.current_code) {
+    //         const intervalId = setInterval(fetchProject, 10000)
+    //         return () => clearInterval(intervalId)
+    //     }
+    // }, [fetchProject, project])
 
     useEffect(() => {
-        if (project && !project.current_code) {
-            const intervalId = setInterval(fetchProject, 10000)
-            return () => clearInterval(intervalId)
+        if(session?.user){
+            fetchProject();
+        }else if(!isPending && !session?.user){
+            navigate('/');
+            toast('Please login to view your projects');
         }
-    }, [fetchProject, project])
+    },[session?.user])
+
+    useEffect(() => {
+      if(project && !project.current_code){
+        const intervalId = setInterval(fetchProject, 10000)
+        return () => clearInterval(intervalId)
+      }
+    },[project])
 
     if (loading) {
         return (
