@@ -1,0 +1,52 @@
+2026-11-13 14:27:53,747 - ace - INFO - Reusing active session (valid for 14327.423277s). Biometric check skipped.
+2026-11-13 14:36:19,969 - ace - INFO - Reusing active session (valid for 13821.278502s). Biometric check skipped.
+2026-11-13 14:36:19,969 - ace - INFO - Getting fields for: region=USA, delay=1, universe=TOP3000, search key word: volume
+2026-11-13 14:37:20,287 - ace - INFO - Reusing active session (valid for 13760.864938s). Biometric check skipped.
+2026-11-13 14:37:20,287 - ace - INFO - Getting fields for: region=USA, delay=1, universe=TOP3000, search key word: volume
+2026-11-13 14:37:48,549 - ace - INFO - Reusing active session (valid for 13732.653078s). Biometric check skipped.
+2026-11-13 14:38:17,698 - ace - INFO - Reusing active session (valid for 13703.456624s). Biometric check skipped.
+2026-11-13 14:38:25,654 - ace - INFO - Reusing active session (valid for 13695.469816s). Biometric check skipped.
+2026-11-13 14:39:34,360 - ace - INFO - Reusing active session (valid for 13626.806306s). Biometric check skipped.
+2026-11-13 14:39:43,364 - ace - INFO - Reusing active session (valid for 13617.805507s). Biometric check skipped.
+2026-11-13 14:39:51,974 - ace - INFO - Reusing active session (valid for 13609.176762s). Biometric check skipped.
+2026-11-13 14:40:00,376 - ace - INFO - Reusing active session (valid for 13600.777456s). Biometric check skipped.
+2026-11-13 14:40:27,470 - ace - INFO - Reusing active session (valid for 13573.881189s). Biometric check skipped.
+2026-11-13 14:42:19,726 - ace - INFO - Reusing active session (valid for 13461.429991s). Biometric check skipped.
+2026-11-13 14:42:34,346 - ace - INFO - Reusing active session (valid for 13446.905824s). Biometric check skipped.
+2026-11-13 14:42:34,346 - ace - INFO - Getting fields for: region=GLB, delay=1, universe=TOP3000, search key word: fundamental
+2026-11-13 14:42:46,224 - ace - INFO - Reusing active session (valid for 13435.015147s). Biometric check skipped.
+2026-11-13 14:42:59,649 - ace - INFO - Reusing active session (valid for 13421.498963s). Biometric check skipped.
+2026-11-13 14:43:46,517 - ace - INFO - Reusing active session (valid for 13374.648525s). Biometric check skipped.
+2026-11-13 14:55:14,630 - ace - INFO - Reusing active session (valid for 12686.527069s). Biometric check skipped.
+2026-11-13 14:55:51,596 - ace - INFO - Reusing active session (valid for 12649.634316s). Biometric check skipped.
+2026-11-13 14:56:24,226 - ace - INFO - Reusing active session (valid for 12616.929837s). Biometric check skipped.
+2026-11-13 14:56:42,324 - ace - INFO - Reusing active session (valid for 12598.842209s). Biometric check skipped.
+2026-11-13 14:56:51,366 - ace - INFO - Reusing active session (valid for 12589.799409s). Biometric check skipped.
+2026-11-13 14:57:04,180 - ace - INFO - Reusing active session (valid for 12576.9846s). Biometric check skipped.
+2026-11-13 14:57:14,990 - ace - INFO - Reusing active session (valid for 12566.23787s). Biometric check skipped.
+2026-11-13 14:57:25,664 - ace - INFO - Reusing active session (valid for 12555.495052s). Biometric check skipped.
+2026-11-13 14:57:41,204 - ace - INFO - Reusing active session (valid for 12540.039388s). Biometric check skipped.
+2026-11-13 14:57:51,900 - ace - INFO - Reusing active session (valid for 12529.265998s). Biometric check skipped.
+2026-11-13 14:58:05,394 - ace - INFO - Reusing active session (valid for 12515.756471s). Biometric check skipped.
+2026-11-13 14:58:16,330 - ace - INFO - Reusing active session (valid for 12505.01751s). Biometric check skipped.
+2026-11-13 14:58:27,388 - ace - INFO - Reusing active session (valid for 12493.972131s). Biometric check skipped.
+2026-11-13 14:58:51,321 - ace - INFO - Reusing active session (valid for 12469.830435s). Biometric check skipped.
+2026-11-13 14:59:03,024 - ace - INFO - Reusing active session (valid for 12458.315116s). Biometric check skipped.
+2026-11-13 14:59:39,323 - ace - INFO - Reusing active session (valid for 12421.841094s). Biometric check skipped.
+2026-11-13 15:01:54,572 - ace - INFO - Reusing active session (valid for 12286.581933s). Biometric check skipped.
+2026-11-13 15:02:43,318 - ace - INFO - Reusing active session (valid for 12238.633665s). Biometric check skipped.
+2026-11-13 15:04:45,348 - ace - INFO - Reusing active session (valid for 12115.965918s). Biometric check skipped.
+2026-11-13 15:18:37,155 - ace - INFO - Reusing active session (valid for 11284.000959s). Biometric check skipped.
+2026-11-13 15:22:06,315 - ace - INFO - Reusing active session (valid for 11074.816734s). Biometric check skipped.
+2026-11-13 15:22:29,188 - ace - INFO - Reusing active session (valid for 11051.984111s). Biometric check skipped.
+2026-11-13 15:23:00,138 - ace - INFO - Reusing active session (valid for 11021.01452s). Biometric check skipped.
+2026-11-13 15:23:46,231 - ace - INFO - Reusing active session (valid for 10974.933928s). Biometric check skipped.
+2026-11-13 15:23:57,456 - ace - INFO - Reusing active session (valid for 10963.74363s). Biometric check skipped.
+2026-11-13 15:29:17,084 - ace - INFO - Reusing active session (valid for 10644.093616s). Biometric check skipped.
+2026-11-13 15:33:43,859 - ace - INFO - Reusing active session (valid for 10377.311063s). Biometric check skipped.
+2026-11-13 15:42:42,366 - ace - INFO - Reusing active session (valid for 9838.790464s). Biometric check skipped.
+2026-11-13 15:42:42,367 - ace - INFO - Getting fields for: region=USA, delay=1, universe=TOP3000, search key word: analyst
+2026-11-13 15:42:59,233 - ace - INFO - Reusing active session (valid for 9821.934011s). Biometric check skipped.
+2026-11-13 15:43:12,568 - ace - INFO - Reusing active session (valid for 9808.588288s). Biometric check skipped.
+2026-11-13 15:43:25,986 - ace - INFO - Reusing active session (valid for 9795.169525s). Biometric check skipped.
+2026-11-13 16:03:35,635 - ace - INFO - Reusing active session (valid for 8585.535763s). Biometric check skipped.

@@ -22,7 +22,7 @@ const Home = () => {
         return toast.error('Please enter a message');
       }
       setLoading(true);
-      const {data} = await api.post('/api/user/project', {initialPrompt: input});
+      const {data} = await api.post('/api/user/project', {initial_prompt: input});
       setLoading(false);
       navigate(`/projects/${data.projectId}`);
     }catch(error :any){
