@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { appPlans } from '../assets/assets';
 import Footer from '../components/Footer';
+import api from '@/configs/axios';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
+import { Loader2Icon } from 'lucide-react';
 
 interface Plan {
   id: string;
@@ -14,9 +18,24 @@ interface Plan {
 
 const Pricing = () => {
     const [plans] = useState<Plan[]>(appPlans)
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+    const { data: session } = authClient.useSession()
 
-    const handlePurchase = async (_planId: string) => {
-        
+    const handlePurchase = async (planId: string) => {
+        if (!session?.user) {
+            return toast.error('Please sign in to purchase credits')
+        }
+        try {
+            setLoadingPlan(planId)
+            const { data } = await api.post('/api/user/purchase-credits', { planId })
+            if (data.payment_link) {
+                window.location.href = data.payment_link
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || error.message)
+        } finally {
+            setLoadingPlan(null)
+        }
     }
   return (
     <>
@@ -50,8 +69,14 @@ const Pricing = () => {
                             </li>
                           ))}
                       </ul>
-                          <button onClick={() => handlePurchase(plan.id)} className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-sm rounded-md transition-all">
-                                    Buy Now
+                          <button
+                            onClick={() => handlePurchase(plan.id)}
+                            disabled={loadingPlan === plan.id}
+                            className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-sm rounded-md transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                          >
+                            {loadingPlan === plan.id ? (
+                              <><Loader2Icon className="animate-spin size-4" /> Processing...</>
+                            ) : 'Buy Now'}
                           </button>
                   </div>
                 ))}
