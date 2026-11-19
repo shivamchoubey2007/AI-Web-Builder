@@ -2,6 +2,30 @@ import { Request, Response } from 'express';
 import prisma from '../lib/prisma.js';
 import openai from '../configs/openai.js';
 
+// Helper to extract clean HTML from AI response
+const extractHtml = (response: any): string => {
+    const choice = response?.choices?.[0];
+    if (!choice) return '';
+    let raw = choice.message?.content || '';
+    if (!raw && choice.message?.reasoning) {
+        const reasoning = choice.message.reasoning;
+        const match = reasoning.match(/<!DOCTYPE\s+html[\s\S]*?<\/html>/i) || reasoning.match(/<html[\s\S]*?<\/html>/i);
+        if (match) {
+            raw = match[0];
+        }
+    }
+    if (!raw) return '';
+    const fenceMatch = raw.match(/```(?:html)?\s*([\s\S]*?)```/i);
+    if (fenceMatch && fenceMatch[1].trim()) {
+        raw = fenceMatch[1].trim();
+    }
+    const htmlMatch = raw.match(/<!DOCTYPE\s+html[\s\S]*?<\/html>/i) || raw.match(/<html[\s\S]*?<\/html>/i);
+    if (htmlMatch) {
+        return htmlMatch[0].trim();
+    }
+    return raw.replace(/```[a-z]*\n?/gi, '').replace(/```$/g, '').trim();
+};
+
 // Controller function to make revision
 export const makeRevision = async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -48,12 +72,14 @@ export const makeRevision = async (req: Request, res: Response) => {
         })
 
         // Enhance user prompt
-        const promptEnhanceResponse = await openai.chat.completions.create({
-            model: '~openai/gpt-sol-latest',
-            messages: [
-                {
-                    role: 'system',
-                    content: `You are an expert website prompt enhancement assistant.
+        let enhancedPrompt = message;
+        try {
+            const promptEnhanceResponse = await openai.chat.completions.create({
+                model: 'particle-ai/particle-1:free',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are an expert website prompt enhancement assistant.
 
 Your task is to improve the user's website modification request into a clear, detailed, and actionable prompt for a code generation AI.
 
@@ -68,15 +94,18 @@ Instructions:
 - Return only the enhanced prompt.
 - Do not generate code.
 - Do not explain your reasoning.`
-                },
-                {
-                    role: 'user',
-                    content: `User's request: "${message}"`
-                }
-            ]
-        })
-
-        const enhancedPrompt = promptEnhanceResponse.choices[0].message.content;
+                    },
+                    {
+                        role: 'user',
+                        content: `User's request: "${message}"`
+                    }
+                ],
+                max_tokens: 1500
+            })
+            enhancedPrompt = promptEnhanceResponse.choices[0]?.message?.content || message;
+        } catch (err: any) {
+            console.warn('Revision prompt enhancement failed, using raw message:', err.message);
+        }
 
         await prisma.conversation.create({
             data: {
@@ -94,13 +123,7 @@ Instructions:
             }
         })
 
-        // Generate website code
-        const codeGenerationResponse = await openai.chat.completions.create({
-            model: '~openai/gpt-sol-latest',
-            messages: [
-               {
-    role: 'system',
-    content: `You are an expert website code generation assistant.
+        const revisionSystemPrompt = `You are an expert website code generation assistant.
 
 Your task is to modify the existing website code according to the user's requested changes.
 
@@ -114,16 +137,46 @@ Instructions:
 - Return the complete updated website code.
 - Do not include explanations.
 - Do not use Markdown code fences.
-- Return only the code.`
-},
-                {
-                    role: 'user',
-                    content: `Here is the current website code: "${currentProject.current_code}" The user wants this change: "${enhancedPrompt}"`
-                }
-            ]
-        })
+- Return only the code.`;
 
-        const code = codeGenerationResponse.choices[0].message.content || '';
+        // Generate website code (try particle-ai/particle-1:free first for speed and clean output)
+        let code = '';
+        try {
+            const codeGenerationResponse = await openai.chat.completions.create({
+                model: 'particle-ai/particle-1:free',
+                messages: [
+                    { role: 'system', content: revisionSystemPrompt },
+                    {
+                        role: 'user',
+                        content: `Here is the current website code: "${currentProject.current_code}" The user wants this change: "${enhancedPrompt}"`
+                    }
+                ],
+                max_tokens: 16000
+            });
+            code = extractHtml(codeGenerationResponse);
+        } catch (genErr: any) {
+            console.warn('Primary revision model failed, attempting fallback:', genErr.message);
+        }
+
+        // Fallback attempt
+        if (!code) {
+            try {
+                const fallbackResponse = await openai.chat.completions.create({
+                    model: 'nvidia/nemotron-3.5-lightning:free',
+                    messages: [
+                        { role: 'system', content: revisionSystemPrompt },
+                        {
+                            role: 'user',
+                            content: `Here is the current website code: "${currentProject.current_code}" The user wants this change: "${enhancedPrompt}"`
+                        }
+                    ],
+                    max_tokens: 32000
+                });
+                code = extractHtml(fallbackResponse);
+            } catch (fallbackErr: any) {
+                console.error('Fallback revision model failed:', fallbackErr.message);
+            }
+        }
 
         if (!code) {
             await prisma.conversation.create({
@@ -137,12 +190,12 @@ Instructions:
                 where: { id: userId },
                 data: { credits: { increment: 5 } }
             })
-            return;
+            return res.status(500).json({ message: 'Unable to generate updated code' });
         }
 
         const version = await prisma.version.create({
             data: {
-                code: code.replace(/```[a-z]*\n?/gi, '').replace(/```$/g, '').trim(),
+                code,
                 description: 'changes made',
                 projectId
             }
@@ -159,7 +212,7 @@ Instructions:
         await prisma.websiteProject.update({
             where: { id: projectId },
             data: {
-                current_code: code.replace(/```[a-z]*\n?/gi, '').replace(/```$/g, '').trim(),
+                current_code: code,
                 current_version_index: version.id
             }
         })

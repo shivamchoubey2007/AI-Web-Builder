@@ -17,7 +17,7 @@ interface SidebarProps {
 const Sidebar = ({
   isMenuOpen,
   project,
-  setProject: _setProject,
+  setProject,
   isGenerating,
   setIsGenerating,
 }: SidebarProps) => {
@@ -26,7 +26,7 @@ const Sidebar = ({
 
   const fetchProject = async () => {
     try{
-      const { data } = await api.get(`/api/user/projects/${project.id}`);
+      const { data } = await api.get(`/api/user/project/${project.id}`);
       setProject(data.project);
     }catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
@@ -34,13 +34,13 @@ const Sidebar = ({
     }
   }
 
-  const handleRollback = async (_versionId: string) => {
+  const handleRollback = async (versionId: string) => {
     try {
       const confirm = window.confirm("Are you sure you want to roll back to this version? This action cannot be undone."
       );
       if (!confirm) return;
       setIsGenerating(true);
-      const { data } = await api.get(`/api/projects/rollback/${project.id}/${versionId}`);
+      const { data } = await api.get(`/api/project/rollback/${project.id}/${versionId}`);
       const { data: data2 } = await api.get(`/api/user/project/${project.id}`);
       toast.success(data.message);
       setProject(data2.project);
@@ -54,15 +54,15 @@ const Sidebar = ({
 
   const handleRevisions = async (e: FormEvent) => {
     e.preventDefault();
-    let interval: number | undefined;
+    let interval: any;
     try {
       setIsGenerating(true);
       interval = setInterval(()=>{
         fetchProject();
-      },10000)
-      const {data} = await api.post(`/api/projects/revision/${project.id}`, 
+      }, 3000)
+      const {data} = await api.post(`/api/project/revision/${project.id}`, 
       {message: input})
-      fetchProject();
+      await fetchProject();
       toast.success(data.message);
       setInput('')
       clearInterval(interval);

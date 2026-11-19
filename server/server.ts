@@ -24,6 +24,7 @@ app.get('/',(req:Request,res:Response)=>{
 });
 app.use('/api/user', userRouter);
 app.use('/api/project', projectRouter);
+app.use('/api/projects', projectRouter);
 
 app.listen(port,()=>{
   console.log(`Server is runninig at http://localhost:${port}`);

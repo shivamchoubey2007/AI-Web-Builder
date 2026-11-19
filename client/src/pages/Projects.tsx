@@ -41,13 +41,26 @@ const Projects = () => {
         try {
             const { data } = await api.get(`/api/user/project/${projectId}`)
             setProject(data.project)
-            setIsGenerating(data.project.current_code? false : true)
             setLoading(false)
-        }catch (error: any) {
+
+            if (data.project.current_code) {
+                // Code generated successfully
+                setIsGenerating(false)
+            } else {
+                // Check if generation failed by looking at the last assistant message
+                const conversations: { role: string; content: string }[] = data.project.conversation ?? []
+                const lastAssistant = [...conversations].reverse().find(m => m.role === 'assistant')
+                const failed = lastAssistant?.content?.toLowerCase().includes('unable to generate')
+                if (failed) {
+                    setIsGenerating(false)
+                } else {
+                    setIsGenerating(true)
+                }
+            }
+        } catch (error: any) {
             toast.error(error?.response?.data?.message || error.message)
             console.log(error)
         }
-
     }
         
 
@@ -124,11 +137,11 @@ const Projects = () => {
     },[session?.user])
 
     useEffect(() => {
-      if(project && !project.current_code){
-        const intervalId = setInterval(fetchProject, 10000)
-        return () => clearInterval(intervalId)
-      }
-    },[project])
+        if (project && !project.current_code && isGenerating) {
+            const intervalId = setInterval(fetchProject, 3000)
+            return () => clearInterval(intervalId)
+        }
+    }, [project, isGenerating])
 
     if (loading) {
         return (
